@@ -53,3 +53,8 @@ func newCounter() func() int {
 	}
 	return couner
 }
+
+func (s *serviceImpl) Read(task *SerTask) error {
+
+	return nil
+}
