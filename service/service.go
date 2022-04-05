@@ -13,6 +13,6 @@ type SerTask struct {
 	IsDone bool   `json:"isDone"`
 }
 
-type SerReadTask struct {
+type SerFilter struct {
 	Id int `json:"id"`
 }
