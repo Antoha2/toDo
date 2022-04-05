@@ -4,7 +4,7 @@ import "time"
 
 type Repository interface {
 	Create(*RepTask) error
-	Read(int) *RepTask
+	Read(*RepReadTask) *RepTask
 	/* Read() []RepTask
 	Update(RepTask) RepTask
 	Delete(RepTask) */
@@ -16,4 +16,8 @@ type RepTask struct {
 	Text     string
 	IsDone   bool
 	CreateAt time.Time
+}
+
+type RepReadTask struct {
+	Id int
 }

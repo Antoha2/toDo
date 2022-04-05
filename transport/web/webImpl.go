@@ -12,12 +12,12 @@ import (
 	//"github.com/staszigzag/todo/repository"
 )
 
-/* type Task struct {
+type Task struct {
 	Id     int    `json:"id"`
 	Text   string `json:"text"`
 	IsDone bool   `json:"isDone"`
 }
-*/
+
 type webImpl struct {
 	service service.Service
 	server  *http.Server
@@ -101,7 +101,7 @@ func (wImpl *webImpl) Decoder(r *http.Request, task *service.SerTask) error {
 }
 
 func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		return
 	}
 
@@ -116,11 +116,6 @@ func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 	}
 
 	task := wImpl.service.Read(readId)
-	/* if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
-	} */
 
 	json, err := json.Marshal(task)
 

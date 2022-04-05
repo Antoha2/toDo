@@ -12,3 +12,7 @@ type SerTask struct {
 	Text   string `json:"text"`
 	IsDone bool   `json:"isDone"`
 }
+
+type SerReadTask struct {
+	Id int `json:"id"`
+}

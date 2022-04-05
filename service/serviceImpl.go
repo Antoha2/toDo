@@ -59,8 +59,9 @@ func newCounter() func() int {
 //Read
 func (s *serviceImpl) Read(task *SerTask) *SerTask {
 
-	i := task.Id
-	repTask := s.repository22.Read(i)
+	readTask := new(repository.RepReadTask)
+	readTask.Id = task.Id
+	repTask := s.repository22.Read(readTask)
 	task.IsDone = repTask.IsDone
 	task.Text = repTask.Text
 
