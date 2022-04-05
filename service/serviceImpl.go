@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/staszigzag/etodo/repository"
+	"github.com/antoha2/todo/repository"
 )
 
 type serviceImpl struct {

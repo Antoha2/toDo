@@ -1,6 +1,6 @@
 package service
 
-import _ "github.com/staszigzag/etodo/repository"
+import _ "github.com/antoha2/todo/repository"
 
 type Service interface {
 	Create(task *SerTask) error

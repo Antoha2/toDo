@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/staszigzag/etodo/service"
+	"github.com/antoha2/todo/service"
 	//"github.com/staszigzag/todo/repository"
 )
 
