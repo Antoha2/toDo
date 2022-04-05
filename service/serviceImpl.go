@@ -59,26 +59,11 @@ func newCounter() func() int {
 //Read
 func (s *serviceImpl) Read(task *SerTask) *SerTask {
 
-	readTask := new(repository.RepReadTask)
+	readTask := new(repository.RepFilter)
 	readTask.Id = task.Id
 	repTask := s.repository22.Read(readTask)
 	task.IsDone = repTask.IsDone
 	task.Text = repTask.Text
-
-	//repTask := new(repository.RepTask)
-	//if i <1 || i>len(s.){
-	//i, err := strconv.Atoi(task.Id)
-	/*
-		if err != nil {
-			// handle error
-			fmt.Println(err)
-			os.Exit(2)
-		} */
-	/*  err := s.repository22.Read(i)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	} */
 
 	return task
 }
