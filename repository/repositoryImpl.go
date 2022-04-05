@@ -27,8 +27,8 @@ func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
 	//tsd := r.rep[i-1]
 
 	var tsd RepTask
-	for i, _ := range r.rep {
-		if r.rep[i].Id == readTask.Id {
+	for index, _ := range r.rep {
+		if r.rep[index].Id == readTask.Id {
 			tsd = r.rep[readTask.Id-1]
 
 		}
