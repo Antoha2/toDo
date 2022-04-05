@@ -35,9 +35,9 @@ func (wImpl *webImpl) Start() error {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/create", wImpl.handlerCreate)
-	/* 	mux.HandleFunc("/read", wImpl.handlerRead)
-	   	mux.HandleFunc("/update", handlerUpdate)
-	   	mux.HandleFunc("/delete", handlerDelete) */
+	mux.HandleFunc("/read", wImpl.handlerRead)
+	/*   	mux.HandleFunc("/update", handlerUpdate)
+	mux.HandleFunc("/delete", handlerDelete) */
 
 	log.Println("Запуск веб-сервера на http://127.0.0.1:8181")
 	http.ListenAndServe(":8181", mux)
@@ -98,4 +98,37 @@ func (wImpl *webImpl) Decoder(r *http.Request, task *service.SerTask) error {
 		return err
 	}
 	return nil
+}
+
+func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		return
+	}
+
+	readId := new(service.SerTask)
+	//task := new(service.SerTask)
+
+	err := wImpl.Decoder(r, readId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	task := wImpl.service.Read(*readId)
+	/* if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	} */
+
+	json, err := json.Marshal(task)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.Write(json)
+
 }
