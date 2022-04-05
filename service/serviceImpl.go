@@ -21,6 +21,7 @@ func New(rep repository.Repository) *serviceImpl {
 	}
 }
 
+//Create
 func (s *serviceImpl) Create(task *SerTask) error {
 
 	newId := s.counter()
@@ -45,6 +46,7 @@ func (s *serviceImpl) Create(task *SerTask) error {
 	return nil
 }
 
+//счетчик уникальных Id
 func newCounter() func() int {
 	var count int
 	couner := func() int {
@@ -54,14 +56,16 @@ func newCounter() func() int {
 	return couner
 }
 
-func (s *serviceImpl) Read(task SerTask) SerTask {
+//Read
+func (s *serviceImpl) Read(task *SerTask) *SerTask {
 
-	//s.rep
 	i := task.Id
+	repTask := s.repository22.Read(i)
+	task.IsDone = repTask.IsDone
+	task.Text = repTask.Text
+
 	//repTask := new(repository.RepTask)
-
 	//if i <1 || i>len(s.){
-
 	//i, err := strconv.Atoi(task.Id)
 	/*
 		if err != nil {
@@ -69,19 +73,11 @@ func (s *serviceImpl) Read(task SerTask) SerTask {
 			fmt.Println(err)
 			os.Exit(2)
 		} */
-	//fmt.Println("serv1")
-
-	repTask := s.repository22.Read(i)
-
-	task.IsDone = repTask.IsDone
-	task.Text = repTask.Text
-
 	/*  err := s.repository22.Read(i)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	} */
-	//fmt.Println("serv2")
 
 	return task
 }

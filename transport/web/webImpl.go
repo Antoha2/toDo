@@ -115,7 +115,7 @@ func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task := wImpl.service.Read(*readId)
+	task := wImpl.service.Read(readId)
 	/* if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
