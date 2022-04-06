@@ -24,11 +24,10 @@ func New(rep repository.Repository) *serviceImpl {
 //Create
 func (s *serviceImpl) Create(task *SerTask) error {
 
-	newId := s.counter()
-	//newId=len(s.)
-	if newId > 3 {
+	if s.repository22.LenRep() > 2 {
 		return errors.New("нельзя хранить больше трех")
 	}
+	newId := s.counter()
 	repTask := new(repository.RepTask)
 
 	repTask.Text = task.Text
@@ -81,4 +80,10 @@ func (s *serviceImpl) Delete(task *SerTask) error {
 		return err
 	}
 	return nil
+}
+
+func (s *serviceImpl) LenRep() int {
+
+	count := 0
+	return count
 }

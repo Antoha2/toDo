@@ -6,6 +6,7 @@ type Repository interface {
 	Create(*RepTask) error
 	Read(*RepFilter) *RepTask
 	Delete(*RepFilter) error
+	LenRep() int
 	/* Read() []RepTask
 	Update(RepTask) RepTask
 	*/

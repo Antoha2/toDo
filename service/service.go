@@ -6,6 +6,7 @@ type Service interface {
 	Create(task *SerTask) error
 	Read(task *SerTask) *SerTask
 	Delete(task *SerTask) error
+	LenRep() int
 }
 
 type SerTask struct {

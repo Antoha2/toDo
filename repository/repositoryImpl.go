@@ -21,26 +21,27 @@ func (r *repositoryImpl) Create(task *RepTask) error {
 	return nil
 }
 
+func (r *repositoryImpl) LenRep() int {
+
+	count := len(r.rep)
+	//fmt.Println(count)
+	return count
+}
+
 func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
 
-	if len(r.rep) < readTask.Id {
+	/* if len(r.rep) < readTask.Id {
 		return nil
-	}
+	} */
 
 	var tsd *RepTask
-	//count := 0
-	for _, task := range r.rep {
-		/* if task.Id == readTask.Id {
-			tsd = &task
-			//count++
 
-		} */
+	for _, task := range r.rep {
 
 		if task.Id == readTask.Id {
 			tsd = &r.rep[readTask.Id-1]
 		}
 	}
-	//if
 	fmt.Println(tsd)
 	return tsd
 
