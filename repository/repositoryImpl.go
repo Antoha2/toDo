@@ -23,17 +23,38 @@ func (r *repositoryImpl) Create(task *RepTask) error {
 
 func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
 
-	//fmt.Println(r.rep[i-1])
-	//tsd := r.rep[i-1]
+	if len(r.rep) < readTask.Id {
+		return nil
+	}
 
-	var tsd RepTask
-	for index, _ := range r.rep {
-		if r.rep[index].Id == readTask.Id {
-			tsd = r.rep[readTask.Id-1]
+	var tsd *RepTask
+	//count := 0
+	for _, task := range r.rep {
+		/* if task.Id == readTask.Id {
+			tsd = &task
+			//count++
 
+		} */
+
+		if task.Id == readTask.Id {
+			tsd = &r.rep[readTask.Id-1]
 		}
 	}
+	//if
 	fmt.Println(tsd)
-	return &tsd
+	return tsd
 
+}
+
+func (r *repositoryImpl) Delete(delTask *RepFilter) error {
+
+	for i, v := range r.rep {
+		if v.Id == delTask.Id {
+			copy(r.rep[i:], r.rep[i+1:])
+			//r.rep[len(r.rep)-1] = nil // обнуляем "хвост"
+			r.rep = r.rep[:len(r.rep)-1]
+		}
+	}
+	fmt.Println(r)
+	return nil
 }

@@ -5,6 +5,7 @@ import _ "github.com/antoha2/todo/repository"
 type Service interface {
 	Create(task *SerTask) error
 	Read(task *SerTask) *SerTask
+	Delete(task *SerTask) error
 }
 
 type SerTask struct {

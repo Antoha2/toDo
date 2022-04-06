@@ -5,9 +5,10 @@ import "time"
 type Repository interface {
 	Create(*RepTask) error
 	Read(*RepFilter) *RepTask
+	Delete(*RepFilter) error
 	/* Read() []RepTask
 	Update(RepTask) RepTask
-	Delete(RepTask) */
+	*/
 
 }
 
