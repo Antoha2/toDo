@@ -7,10 +7,7 @@ type Repository interface {
 	Read(*RepFilter) *RepTask
 	Delete(*RepFilter) error
 	LenRep() int
-	/* Read() []RepTask
-	Update(RepTask) RepTask
-	*/
-
+	Update(*RepTask) error //*RepTask
 }
 
 type RepTask struct {

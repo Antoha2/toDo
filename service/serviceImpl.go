@@ -59,10 +59,10 @@ func newCounter() func() int {
 //Read
 func (s *serviceImpl) Read(task *SerTask) *SerTask {
 
-	readTask := new(repository.RepFilter)
-	readTask.Id = task.Id
+	readFilter := new(repository.RepFilter)
+	readFilter.Id = task.Id
 
-	repTask := s.repository22.Read(readTask)
+	repTask := s.repository22.Read(readFilter)
 	task.IsDone = repTask.IsDone
 	task.Text = repTask.Text
 
@@ -72,9 +72,9 @@ func (s *serviceImpl) Read(task *SerTask) *SerTask {
 //Delete
 func (s *serviceImpl) Delete(task *SerTask) error {
 
-	delTask := new(repository.RepFilter)
-	delTask.Id = task.Id
-	err := s.repository22.Delete(delTask)
+	delFilter := new(repository.RepFilter)
+	delFilter.Id = task.Id
+	err := s.repository22.Delete(delFilter)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -84,6 +84,24 @@ func (s *serviceImpl) Delete(task *SerTask) error {
 
 func (s *serviceImpl) LenRep() int {
 
-	count := 0
-	return count
+	return 0
+}
+
+//Update
+func (s *serviceImpl) Update(task *SerTask) error {
+
+	upFilter := new(repository.RepTask)
+	upFilter.Id = task.Id
+	upFilter.IsDone = task.IsDone
+	upFilter.Text = task.Text
+
+	err := s.repository22.Update(upFilter)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	//task.IsDone = repTask.IsDone
+	//	task.Text = repTask.Text
+
+	return nil
 }

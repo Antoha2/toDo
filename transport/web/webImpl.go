@@ -36,8 +36,7 @@ func (wImpl *webImpl) Start() error {
 	mux.HandleFunc("/create", wImpl.handlerCreate)
 	mux.HandleFunc("/read", wImpl.handlerRead)
 	mux.HandleFunc("/delete", wImpl.handlerDelete)
-	/*   	mux.HandleFunc("/update", handlerUpdate)
-	 */
+	mux.HandleFunc("/update", wImpl.handlerUpdate)
 
 	log.Println("Запуск веб-сервера на http://127.0.0.1:8181")
 	http.ListenAndServe(":8181", mux)
@@ -52,6 +51,7 @@ func (wImpl *webImpl) Stop() {
 	}
 }
 
+//обработчик Сreate
 func (wImpl *webImpl) handlerCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
@@ -100,6 +100,7 @@ func (wImpl *webImpl) Decoder(r *http.Request, task *service.SerTask) error {
 	return nil
 }
 
+//обработчик Read
 func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
@@ -127,6 +128,7 @@ func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//обработчик Delete
 func (wImpl *webImpl) handlerDelete(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
@@ -141,10 +143,35 @@ func (wImpl *webImpl) handlerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = wImpl.service.Delete(delId)
-	//обработка ошибки
+	err = wImpl.service.Delete(delId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+}
 
-	/*task := wImpl.service.Delete(delId)
+//обработчик update
+func (wImpl *webImpl) handlerUpdate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		return
+	}
+
+	task := new(service.SerTask)
+
+	err := wImpl.Decoder(r, task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	err = wImpl.service.Update(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
 
 	json, err := json.Marshal(task)
 
@@ -153,6 +180,7 @@ func (wImpl *webImpl) handlerDelete(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
+
 	w.Write(json)
-	*/
+
 }

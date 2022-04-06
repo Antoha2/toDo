@@ -21,6 +21,7 @@ func (r *repositoryImpl) Create(task *RepTask) error {
 	return nil
 }
 
+//подсчет кол-ва элементов
 func (r *repositoryImpl) LenRep() int {
 
 	count := len(r.rep)
@@ -28,11 +29,8 @@ func (r *repositoryImpl) LenRep() int {
 	return count
 }
 
+//Read
 func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
-
-	/* if len(r.rep) < readTask.Id {
-		return nil
-	} */
 
 	var tsd *RepTask
 
@@ -44,9 +42,9 @@ func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
 	}
 	fmt.Println(tsd)
 	return tsd
-
 }
 
+//Delete
 func (r *repositoryImpl) Delete(delTask *RepFilter) error {
 
 	for i, v := range r.rep {
@@ -57,5 +55,23 @@ func (r *repositoryImpl) Delete(delTask *RepFilter) error {
 		}
 	}
 	fmt.Println(r)
+	return nil
+}
+
+//Update
+func (r *repositoryImpl) Update(upTask *RepTask) error {
+
+	//var tsd *RepTask
+
+	for index, _ := range r.rep {
+
+		if r.rep[index].Id == upTask.Id {
+
+			r.rep[index].Text = upTask.Text
+			r.rep[index].IsDone = upTask.IsDone
+			fmt.Println(r.rep[index])
+		}
+	}
+	//fmt.Println(tsd)
 	return nil
 }
