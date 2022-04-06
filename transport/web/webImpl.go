@@ -129,13 +129,8 @@ func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-
-	fmt.Println(readIds)
-
 	task := wImpl.service.Read(readIds)
-
 	json, err := json.Marshal(task)
-
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))

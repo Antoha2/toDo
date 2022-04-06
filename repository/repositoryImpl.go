@@ -25,48 +25,26 @@ func (r *repositoryImpl) Create(task *RepTask) error {
 func (r *repositoryImpl) LenRep() int {
 
 	count := len(r.rep)
-	//fmt.Println(count)
 	return count
 }
 
 //Read
-func (r *repositoryImpl) Read(readFilter *RepFilter) *RepFilter {
+func (r *repositoryImpl) Read(readFilter *RepFilter) []*RepTask {
 
-	//var tsd *RepTask
+	sliceTask := make([]*RepTask, 0)
 
-	/* count := 0
-	count2 := 0
-	//fmt.Println(readFilter.Ids)
-	for index1, _ := range readFilter.Ids {
-		count = index1
-	}
-	fmt.Println(count)
+	for _, idsTask := range readFilter.Ids {
+		for _, task := range r.rep {
 
-	for index2, _ := range r.rep {
-		count2 = index2
-	}
-	fmt.Println(count2)
-	fmt.Println(readFilter.Ids) */
-	for index1, _ := range readFilter.Ids {
-		for index2, _ := range r.rep {
-
-			if readFilter.Ids[index1] == r.rep[index2].Id {
-				fmt.Println(readFilter.Ids[index1], r.rep[index2].Id)
-				fmt.Println(readFilter.Tasks[index1], " - ", r.rep[index2])
-
-				//readFilter.Tasks[index1] = r.rep[index2]
-			}
-			//fmt.Println(index1, index2)
-		}
-	}
-
-	/* if readFilter.Ids[index1] == task.Id {
-				readFilter.Tasks[index1] = task
+			if idsTask == task.Id {
+				//fmt.Println(readFilter.Ids[index1], r.rep[index2].Id)
+				sliceTask = append(sliceTask, &task)
 			}
 		}
-	} */
-	//fmt.Println(tsd)
-	return readFilter
+	}
+
+	fmt.Println(&sliceTask)
+	return sliceTask
 }
 
 //Delete
