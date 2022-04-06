@@ -24,7 +24,7 @@ func New(rep repository.Repository) *serviceImpl {
 //Create
 func (s *serviceImpl) Create(task *SerTask) error {
 
-	if s.repository22.LenRep() > 2 {
+	if s.repository22.LenRep() > 3 {
 		return errors.New("нельзя хранить больше трех")
 	}
 	newId := s.counter()
@@ -57,14 +57,20 @@ func newCounter() func() int {
 }
 
 //Read
-func (s *serviceImpl) Read(task *SerTask) *SerTask {
+func (s *serviceImpl) Read(task *SerFilter) *SerFilter {
 
 	readFilter := new(repository.RepFilter)
-	readFilter.Id = task.Id
 
-	repTask := s.repository22.Read(readFilter)
-	task.IsDone = repTask.IsDone
-	task.Text = repTask.Text
+	//fmt.Println(readFilter)
+	readFilter.Ids = task.Ids
+	//fmt.Println(readFilter)
+	//repTask :
+	_ = s.repository22.Read(readFilter)
+
+	//fmt.Println(repTask.Tasks)
+	//task.Tasks = repTask.Tasks
+	/* task.IsDone = repTask.IsDone
+	task.Text = repTask.Text */
 
 	return task
 }

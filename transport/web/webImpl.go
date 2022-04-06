@@ -100,22 +100,39 @@ func (wImpl *webImpl) Decoder(r *http.Request, task *service.SerTask) error {
 	return nil
 }
 
+func (wImpl *webImpl) DecoderFilter(r *http.Request, task *service.SerFilter) error {
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, task)
+	if err != nil {
+		fmt.Println("can't unmarshal: ", err.Error())
+		return err
+	}
+	return nil
+}
+
 //обработчик Read
 func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
 	}
 
-	readId := new(service.SerTask)
+	readIds := new(service.SerFilter)
 
-	err := wImpl.Decoder(r, readId)
+	err := wImpl.DecoderFilter(r, readIds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
 	}
 
-	task := wImpl.service.Read(readId)
+	fmt.Println(readIds)
+
+	task := wImpl.service.Read(readIds)
 
 	json, err := json.Marshal(task)
 

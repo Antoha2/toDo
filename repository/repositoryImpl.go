@@ -30,18 +30,43 @@ func (r *repositoryImpl) LenRep() int {
 }
 
 //Read
-func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
+func (r *repositoryImpl) Read(readFilter *RepFilter) *RepFilter {
 
-	var tsd *RepTask
+	//var tsd *RepTask
 
-	for _, task := range r.rep {
+	/* count := 0
+	count2 := 0
+	//fmt.Println(readFilter.Ids)
+	for index1, _ := range readFilter.Ids {
+		count = index1
+	}
+	fmt.Println(count)
 
-		if task.Id == readTask.Id {
-			tsd = &r.rep[readTask.Id-1]
+	for index2, _ := range r.rep {
+		count2 = index2
+	}
+	fmt.Println(count2)
+	fmt.Println(readFilter.Ids) */
+	for index1, _ := range readFilter.Ids {
+		for index2, _ := range r.rep {
+
+			if readFilter.Ids[index1] == r.rep[index2].Id {
+				fmt.Println(readFilter.Ids[index1], r.rep[index2].Id)
+				fmt.Println(readFilter.Tasks[index1], " - ", r.rep[index2])
+
+				//readFilter.Tasks[index1] = r.rep[index2]
+			}
+			//fmt.Println(index1, index2)
 		}
 	}
-	fmt.Println(tsd)
-	return tsd
+
+	/* if readFilter.Ids[index1] == task.Id {
+				readFilter.Tasks[index1] = task
+			}
+		}
+	} */
+	//fmt.Println(tsd)
+	return readFilter
 }
 
 //Delete
