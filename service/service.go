@@ -4,7 +4,7 @@ import _ "github.com/antoha2/todo/repository"
 
 type Service interface {
 	Create(task *SerTask) error
-	Read(task *SerFilter) *SerFilter
+	Read(task *SerFilter) []*SerTask
 	Delete(task *SerTask) error
 	Update(task *SerTask) error //*SerTask
 	LenRep() int

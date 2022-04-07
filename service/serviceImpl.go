@@ -24,7 +24,7 @@ func New(rep repository.Repository) *serviceImpl {
 //Create
 func (s *serviceImpl) Create(task *SerTask) error {
 
-	if s.repository22.LenRep() > 3 {
+	if s.repository22.LenRep() >= 3 {
 		return errors.New("нельзя хранить больше трех")
 	}
 	newId := s.counter()
@@ -57,22 +57,22 @@ func newCounter() func() int {
 }
 
 //Read
-func (s *serviceImpl) Read(task *SerFilter) *SerFilter {
+func (s *serviceImpl) Read(task *SerFilter) []*SerTask {
 
 	readFilter := new(repository.RepFilter)
-
-	//fmt.Println(readFilter)
 	readFilter.Ids = task.Ids
-	//fmt.Println(readFilter)
-	//repTask :
-	_ = s.repository22.Read(readFilter)
+	tasks := s.repository22.Read(readFilter)
+	sliceTask := make([]*SerTask, len(tasks))
 
-	//fmt.Println(repTask.Tasks)
-	//task.Tasks = repTask.Tasks
-	/* task.IsDone = repTask.IsDone
-	task.Text = repTask.Text */
-
-	return task
+	for index, task := range tasks {
+		t := &SerTask{
+			Id:     task.Id,
+			Text:   task.Text,
+			IsDone: task.IsDone,
+		}
+		sliceTask[index] = t
+	}
+	return sliceTask
 }
 
 //Delete

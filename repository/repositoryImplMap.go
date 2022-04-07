@@ -5,19 +5,19 @@ import (
 	"fmt"
 )
 
-type repositoryImplSlice struct {
-	rep []RepTask
+type repositoryImplMap struct {
+	rep mapRepTask //////////////////////////////////////////////////////////////////
 }
 
-func New() *repositoryImplSlice {
+func NewMap() *repositoryImplMap {
 	r := make([]RepTask, 0)
 
-	return &repositoryImplSlice{
+	return &repositoryImplMap{
 		rep: r,
 	}
 }
 
-func (r *repositoryImplSlice) Create(task *RepTask) error {
+func (r *repositoryImplMap) Create(task *RepTask) error {
 
 	r.rep = append(r.rep, *task)
 	fmt.Println(r)
@@ -25,14 +25,14 @@ func (r *repositoryImplSlice) Create(task *RepTask) error {
 }
 
 //подсчет кол-ва элементов
-func (r *repositoryImplSlice) LenRep() int {
+func (r *repositoryImplMap) LenRep() int {
 
 	count := len(r.rep)
 	return count
 }
 
 //Read
-func (r *repositoryImplSlice) Read(readFilter *RepFilter) []RepTask {
+func (r *repositoryImplMap) Read(readFilter *RepFilter) []RepTask {
 
 	if readFilter.Ids == nil || len(readFilter.Ids) == 0 {
 		return r.rep
@@ -56,7 +56,7 @@ func (r *repositoryImplSlice) Read(readFilter *RepFilter) []RepTask {
 }
 
 //Delete
-func (r *repositoryImplSlice) Delete(delTask *RepFilter) error {
+func (r *repositoryImplMap) Delete(delTask *RepFilter) error {
 
 	for i, v := range r.rep {
 		if v.Id == delTask.Id {
@@ -70,7 +70,7 @@ func (r *repositoryImplSlice) Delete(delTask *RepFilter) error {
 }
 
 //Update
-func (r *repositoryImplSlice) Update(upTask *RepTask) error {
+func (r *repositoryImplMap) Update(upTask *RepTask) error {
 
 	isUpdate := false
 
