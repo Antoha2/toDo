@@ -6,11 +6,11 @@ import (
 )
 
 type repositoryImplMap struct {
-	rep mapRepTask //////////////////////////////////////////////////////////////////
+	rep map[int]RepTask //////////////////////////////////////////////////////////////////
 }
 
 func NewMap() *repositoryImplMap {
-	r := make([]RepTask, 0)
+	r := make(map[int]RepTask)
 
 	return &repositoryImplMap{
 		rep: r,
@@ -19,7 +19,9 @@ func NewMap() *repositoryImplMap {
 
 func (r *repositoryImplMap) Create(task *RepTask) error {
 
-	r.rep = append(r.rep, *task)
+	//t:=task.Id
+	r.rep[task.Id] = *task
+	//r.rep[t] = append(r.rep, *task)
 	fmt.Println(r)
 	return nil
 }
@@ -34,11 +36,15 @@ func (r *repositoryImplMap) LenRep() int {
 //Read
 func (r *repositoryImplMap) Read(readFilter *RepFilter) []RepTask {
 
-	if readFilter.Ids == nil || len(readFilter.Ids) == 0 {
-		return r.rep
-	}
-
 	sliceTask := make([]RepTask, 0)
+
+	if readFilter.Ids == nil || len(readFilter.Ids) == 0 {
+
+		for _, task := range r.rep {
+			sliceTask = append(sliceTask, task)
+		}
+		return sliceTask
+	}
 
 	for _, id := range readFilter.Ids {
 		for i, task := range r.rep {
@@ -56,34 +62,52 @@ func (r *repositoryImplMap) Read(readFilter *RepFilter) []RepTask {
 }
 
 //Delete
-func (r *repositoryImplMap) Delete(delTask *RepFilter) error {
+func (r *repositoryImplMap) Delete(delFilter *RepFilter) error {
 
-	for i, v := range r.rep {
-		if v.Id == delTask.Id {
-			copy(r.rep[i:], r.rep[i+1:])
-			//r.rep[len(r.rep)-1] = nil // обнуляем "хвост"
-			r.rep = r.rep[:len(r.rep)-1]
-		}
-	}
+	delete(r.rep, delFilter.Id)
 	fmt.Println(r)
 	return nil
+
+	/* if delFilter.Ids == nil || len(delFilter.Ids) == 0 {
+		for i, _ := range r.rep {
+			delete(r.rep, i)
+
+		}
+		fmt.Println(r)
+		return nil
+	}  */
+	//for _, id := range delFilter.Ids {
+
+	//fmt.Println(len(delFilter.Ids))
+
 }
 
 //Update
 func (r *repositoryImplMap) Update(upTask *RepTask) error {
 
+	sliceTask := make([]RepTask, 0)
+	for _, task := range r.rep {
+		sliceTask = append(sliceTask, task)
+	}
+
 	isUpdate := false
 
-	for index, _ := range r.rep {
+	for index, _ := range sliceTask {
 
-		if r.rep[index].Id == upTask.Id {
+		if sliceTask[index].Id == upTask.Id {
 
-			r.rep[index].Text = upTask.Text
-			r.rep[index].IsDone = upTask.IsDone
-			fmt.Println(r.rep[index])
+			sliceTask[index].Text = upTask.Text
+			sliceTask[index].IsDone = upTask.IsDone
+			fmt.Println(sliceTask[index])
 			isUpdate = true
 		}
 	}
+
+	for index, task := range sliceTask {
+
+		r.rep[index+1] = task
+	}
+
 	if !isUpdate {
 		return errors.New("id not fined")
 	}

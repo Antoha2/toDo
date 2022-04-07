@@ -4,7 +4,7 @@ import "time"
 
 type Repository interface {
 	Create(*RepTask) error
-	Read(*RepFilter) map[int][]RepTask
+	Read(*RepFilter) []RepTask
 	Delete(*RepFilter) error
 	LenRep() int
 	Update(*RepTask) error //*RepTask
