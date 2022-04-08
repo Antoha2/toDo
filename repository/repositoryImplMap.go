@@ -64,7 +64,17 @@ func (r *repositoryImplMap) Read(readFilter *RepFilter) []RepTask {
 //Delete
 func (r *repositoryImplMap) Delete(delFilter *RepFilter) error {
 
-	delete(r.rep, delFilter.Id)
+	isDel := false
+	for _, task := range r.rep {
+		if task.Id == delFilter.Id {
+
+			delete(r.rep, delFilter.Id)
+			isDel = true
+		}
+	}
+	if !isDel {
+		return errors.New("id not fined")
+	}
 	fmt.Println(r)
 	return nil
 
