@@ -1,39 +1,91 @@
 package repository
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-type repositoryImpl struct {
+type repositoryImplSlice struct {
 	rep []RepTask
 }
 
-func New() *repositoryImpl {
+func New() *repositoryImplSlice {
 	r := make([]RepTask, 0)
 
-	return &repositoryImpl{
+	return &repositoryImplSlice{
 		rep: r,
 	}
 }
 
-func (r *repositoryImpl) Create(task *RepTask) error {
+func (r *repositoryImplSlice) Create(task *RepTask) error {
 
 	r.rep = append(r.rep, *task)
 	fmt.Println(r)
 	return nil
 }
 
-func (r *repositoryImpl) Read(readTask *RepFilter) *RepTask {
+//подсчет кол-ва элементов
+func (r *repositoryImplSlice) LenRep() int {
 
-	//fmt.Println(r.rep[i-1])
-	//tsd := r.rep[i-1]
+	count := len(r.rep)
+	return count
+}
 
-	var tsd RepTask
-	for index, _ := range r.rep {
-		if r.rep[index].Id == readTask.Id {
-			tsd = r.rep[readTask.Id-1]
+//Read
+func (r *repositoryImplSlice) Read(readFilter *RepFilter) []RepTask {
 
+	if readFilter.Ids == nil || len(readFilter.Ids) == 0 {
+		return r.rep
+	}
+
+	sliceTask := make([]RepTask, 0)
+
+	for _, id := range readFilter.Ids {
+		for i, task := range r.rep {
+			if id == task.Id {
+				sliceTask = append(sliceTask, r.rep[i])
+			}
 		}
 	}
-	fmt.Println(tsd)
-	return &tsd
 
+	for _, t := range sliceTask {
+		fmt.Println(t)
+	}
+
+	return sliceTask
+}
+
+//Delete
+func (r *repositoryImplSlice) Delete(delTask *RepFilter) error {
+
+	for i, v := range r.rep {
+		if v.Id == delTask.Id {
+			copy(r.rep[i:], r.rep[i+1:])
+			//r.rep[len(r.rep)-1] = nil // обнуляем "хвост"
+			r.rep = r.rep[:len(r.rep)-1]
+		}
+	}
+	fmt.Println(r)
+	return nil
+}
+
+//Update
+func (r *repositoryImplSlice) Update(upTask *RepTask) error {
+
+	isUpdate := false
+
+	for index, _ := range r.rep {
+
+		if r.rep[index].Id == upTask.Id {
+
+			r.rep[index].Text = upTask.Text
+			r.rep[index].IsDone = upTask.IsDone
+			fmt.Println(r.rep[index])
+			isUpdate = true
+		}
+	}
+	if !isUpdate {
+		return errors.New("id not fined")
+	}
+	return nil
 }

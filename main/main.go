@@ -18,7 +18,7 @@ func main() {
 
 func Run() {
 
-	rep := repository.New()
+	rep := repository.NewMap()
 	ser := service.New(rep)
 	tran := web.New(ser)
 

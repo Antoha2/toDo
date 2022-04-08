@@ -24,10 +24,10 @@ func New(rep repository.Repository) *serviceImpl {
 //Create
 func (s *serviceImpl) Create(task *SerTask) error {
 
-	newId := s.counter()
-	if newId > 3 {
+	if s.repository22.LenRep() >= 3 {
 		return errors.New("нельзя хранить больше трех")
 	}
+	newId := s.counter()
 	repTask := new(repository.RepTask)
 
 	repTask.Text = task.Text
@@ -57,13 +57,57 @@ func newCounter() func() int {
 }
 
 //Read
-func (s *serviceImpl) Read(task *SerTask) *SerTask {
+func (s *serviceImpl) Read(task *SerFilter) []*SerTask {
 
-	readTask := new(repository.RepFilter)
-	readTask.Id = task.Id
-	repTask := s.repository22.Read(readTask)
-	task.IsDone = repTask.IsDone
-	task.Text = repTask.Text
+	readFilter := new(repository.RepFilter)
+	readFilter.Ids = task.Ids
+	tasks := s.repository22.Read(readFilter)
+	sliceTask := make([]*SerTask, len(tasks))
 
-	return task
+	for index, task := range tasks {
+		t := &SerTask{
+			Id:     task.Id,
+			Text:   task.Text,
+			IsDone: task.IsDone,
+		}
+		sliceTask[index] = t
+	}
+	return sliceTask
+}
+
+//Delete
+func (s *serviceImpl) Delete(task *SerTask) error {
+
+	delFilter := new(repository.RepFilter)
+	delFilter.Id = task.Id
+	err := s.repository22.Delete(delFilter)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (s *serviceImpl) LenRep() int {
+
+	return 0
+}
+
+//Update
+func (s *serviceImpl) Update(task *SerTask) error {
+
+	upFilter := new(repository.RepTask)
+	upFilter.Id = task.Id
+	upFilter.IsDone = task.IsDone
+	upFilter.Text = task.Text
+
+	err := s.repository22.Update(upFilter)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	//task.IsDone = repTask.IsDone
+	//	task.Text = repTask.Text
+
+	return nil
 }

@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/antoha2/todo/service"
-	//"github.com/staszigzag/todo/repository"
 )
 
 type Task struct {
@@ -36,8 +35,8 @@ func (wImpl *webImpl) Start() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/create", wImpl.handlerCreate)
 	mux.HandleFunc("/read", wImpl.handlerRead)
-	/*   	mux.HandleFunc("/update", handlerUpdate)
-	mux.HandleFunc("/delete", handlerDelete) */
+	mux.HandleFunc("/delete", wImpl.handlerDelete)
+	mux.HandleFunc("/update", wImpl.handlerUpdate)
 
 	log.Println("Запуск веб-сервера на http://127.0.0.1:8181")
 	http.ListenAndServe(":8181", mux)
@@ -52,6 +51,7 @@ func (wImpl *webImpl) Stop() {
 	}
 }
 
+//обработчик Сreate
 func (wImpl *webImpl) handlerCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
@@ -100,22 +100,90 @@ func (wImpl *webImpl) Decoder(r *http.Request, task *service.SerTask) error {
 	return nil
 }
 
+func (wImpl *webImpl) DecoderFilter(r *http.Request, task *service.SerFilter) error {
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, task)
+	if err != nil {
+		fmt.Println("can't unmarshal: ", err.Error())
+		return err
+	}
+	return nil
+}
+
+//обработчик Read
 func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
 	}
 
-	readId := new(service.SerTask)
-	//task := new(service.SerTask)
+	readIds := new(service.SerFilter)
 
-	err := wImpl.Decoder(r, readId)
+	err := wImpl.DecoderFilter(r, readIds)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	task := wImpl.service.Read(readIds)
+	json, err := json.Marshal(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.Write(json)
+
+}
+
+//обработчик Delete
+func (wImpl *webImpl) handlerDelete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		return
+	}
+
+	delId := new(service.SerTask)
+
+	err := wImpl.Decoder(r, delId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
 	}
 
-	task := wImpl.service.Read(readId)
+	err = wImpl.service.Delete(delId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+}
+
+//обработчик update
+func (wImpl *webImpl) handlerUpdate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		return
+	}
+
+	task := new(service.SerTask)
+
+	err := wImpl.Decoder(r, task)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	err = wImpl.service.Update(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
 
 	json, err := json.Marshal(task)
 
@@ -124,6 +192,7 @@ func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
+
 	w.Write(json)
 
 }
