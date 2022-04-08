@@ -96,27 +96,24 @@ func (r *repositoryImplMap) Delete(delFilter *RepFilter) error {
 func (r *repositoryImplMap) Update(upTask *RepTask) error {
 
 	sliceTask := make([]RepTask, 0)
-	for _, task := range r.rep {
-		sliceTask = append(sliceTask, task)
-	}
 
 	isUpdate := false
 
-	for index, _ := range sliceTask {
+	for index := 0; index < len(r.rep); index++ {
+
+		sliceTask = append(sliceTask, r.rep[index])
 
 		if sliceTask[index].Id == upTask.Id {
 
 			sliceTask[index].Text = upTask.Text
 			sliceTask[index].IsDone = upTask.IsDone
-			fmt.Println(sliceTask[index])
+			r.rep[index] = sliceTask[index]
+			fmt.Println(r.rep[index])
 			isUpdate = true
 		}
 	}
 
-	for index, task := range sliceTask {
-
-		r.rep[index+1] = task
-	}
+	//fmt.Println(r)
 
 	if !isUpdate {
 		return errors.New("id not fined")
