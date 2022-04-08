@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+var errNotFinedId = errors.New("id not fined")
+
 type repositoryImplMap struct {
 	rep map[int]RepTask //////////////////////////////////////////////////////////////////
 }
@@ -64,59 +66,21 @@ func (r *repositoryImplMap) Read(readFilter *RepFilter) []RepTask {
 //Delete
 func (r *repositoryImplMap) Delete(delFilter *RepFilter) error {
 
-	isDel := false
-	for _, task := range r.rep {
-		if task.Id == delFilter.Id {
-
-			delete(r.rep, delFilter.Id)
-			isDel = true
-		}
-	}
-	if !isDel {
-		return errors.New("id not fined")
-	}
-	fmt.Println(r)
-	return nil
-
-	/* if delFilter.Ids == nil || len(delFilter.Ids) == 0 {
-		for i, _ := range r.rep {
-			delete(r.rep, i)
-
-		}
+	if _, ok := r.rep[delFilter.Id]; ok {
+		delete(r.rep, delFilter.Id)
 		fmt.Println(r)
 		return nil
-	}  */
-	//for _, id := range delFilter.Ids {
-
-	//fmt.Println(len(delFilter.Ids))
-
+	}
+	return errNotFinedId
 }
 
 //Update
 func (r *repositoryImplMap) Update(upTask *RepTask) error {
 
-	sliceTask := make([]RepTask, 0)
-
-	isUpdate := false
-
-	for index := 0; index < len(r.rep); index++ {
-
-		sliceTask = append(sliceTask, r.rep[index])
-
-		if sliceTask[index].Id == upTask.Id {
-
-			sliceTask[index].Text = upTask.Text
-			sliceTask[index].IsDone = upTask.IsDone
-			r.rep[index] = sliceTask[index]
-			fmt.Println(r.rep[index])
-			isUpdate = true
-		}
+	if _, ok := r.rep[upTask.Id]; ok {
+		r.rep[upTask.Id] = *upTask
+		fmt.Println(r)
+		return nil
 	}
-
-	//fmt.Println(r)
-
-	if !isUpdate {
-		return errors.New("id not fined")
-	}
-	return nil
+	return errNotFinedId
 }
