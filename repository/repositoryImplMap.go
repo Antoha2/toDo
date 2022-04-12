@@ -8,7 +8,7 @@ import (
 var errNotFinedId = errors.New("id not fined")
 
 type repositoryImplMap struct {
-	rep map[int]RepTask //////////////////////////////////////////////////////////////////
+	rep map[int]RepTask
 }
 
 func NewMap() *repositoryImplMap {
@@ -19,12 +19,11 @@ func NewMap() *repositoryImplMap {
 	}
 }
 
+//Create
 func (r *repositoryImplMap) Create(task *RepTask) error {
 
-	//t:=task.Id
 	r.rep[task.Id] = *task
-	//r.rep[t] = append(r.rep, *task)
-	fmt.Println(r)
+	//fmt.Println(r)
 	return nil
 }
 

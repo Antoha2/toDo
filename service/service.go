@@ -6,7 +6,7 @@ type Service interface {
 	Create(task *SerTask) error
 	Read(task *SerFilter) []*SerTask
 	Delete(task *SerTask) error
-	Update(task *SerTask) error //*SerTask
+	Update(task *SerTask) error
 	LenRep() int
 }
 
@@ -17,9 +17,9 @@ type SerTask struct {
 }
 
 type SerFilter struct {
-	Id     int       `json:"id"`
-	Ids    []int     `json:"ids"`
-	Text   string    `json:"text"`
-	IsDone bool      `json:"isDone"`
-	Tasks  []SerTask `json:"tasks"`
+	Id     int    `json:"id"`
+	Ids    []int  `json:"ids"`
+	Text   string `json:"text"`
+	IsDone bool   `json:"isDone"`
+	//Tasks  []SerTask `json:"tasks"`
 }
