@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -14,6 +15,23 @@ func InitTest() service.Service {
 	return ser
 }
 
+func InitCreate(s service.Service) {
+	defCreate := []struct {
+		create *service.SerTask
+	}{
+		{&service.SerTask{1, "111111", false}},
+		{&service.SerTask{2, "222222", false}},
+		{&service.SerTask{3, "333333", false}},
+	}
+	for _, task := range defCreate {
+		err := s.Create(task.create)
+		if err != nil {
+			fmt.Printf("Create() error = %v", err)
+		}
+	}
+}
+
+//test Create
 /* func TestCreateTask(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -44,27 +62,15 @@ func InitTest() service.Service {
 	}
 } */
 
+//test Read
 func TestReadTask(t *testing.T) {
 
-	/* defIds := []struct {
-		Ids []int
-	}{
-		{[]int{1}},
-		{[]int{2}},
-		{[]int{3}},
-		{[]int{1, 2}},
-		{[]int{1, 3}},
-		{[]int{1, 2, 3}},
-		{[]int{}},
-	}
-	*/
 	defCreate := []struct {
 		create *service.SerTask
 	}{
 		{&service.SerTask{1, "111111", false}},
 		{&service.SerTask{2, "222222", false}},
 		{&service.SerTask{3, "333333", false}},
-		//{&service.SerTask{4, "444444", true}},
 	}
 
 	tests := []struct {
@@ -91,13 +97,15 @@ func TestReadTask(t *testing.T) {
 	s := InitTest()
 
 	//создание тасков
+	//InitCreate(s)
 	for _, task := range defCreate {
 		err := s.Create(task.create)
 		if err != nil {
-			t.Fatalf("Create() error = %v", err)
+			fmt.Printf("Create() error = %v", err)
 		}
 	}
 
+	//проверка Read
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			readTask := s.Read(tc.input)
