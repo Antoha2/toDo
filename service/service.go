@@ -7,7 +7,7 @@ type Service interface {
 	Read(task *SerFilter) []*SerTask
 	Delete(task *SerTask) error
 	Update(task *SerTask) error
-	LenRep() int
+	//LenRep() int
 }
 
 type SerTask struct {

@@ -88,10 +88,10 @@ func (s *serviceImpl) Delete(task *SerTask) error {
 	return nil
 }
 
-func (s *serviceImpl) LenRep() int {
+/* func (s *serviceImpl) LenRep() int {
 
 	return 0
-}
+} */
 
 //Update
 func (s *serviceImpl) Update(task *SerTask) error {
