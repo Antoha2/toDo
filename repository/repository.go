@@ -5,7 +5,8 @@ import "time"
 type Repository interface {
 	Create(*RepTask) error
 	Read(*RepFilter) []RepTask
-	Delete(*RepFilter) error
+	Delete(*RepTask) error
+	//Delete(*RepFilter) error
 	LenRep() int
 	Update(*RepTask) error //*RepTask
 }
@@ -22,5 +23,5 @@ type RepFilter struct {
 	Ids    []int
 	Text   string
 	IsDone bool
-	Tasks  []RepTask
+	//Tasks  []RepTask
 }

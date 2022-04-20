@@ -1,5 +1,6 @@
 package repository
 
+/*
 import (
 	"errors"
 	"fmt"
@@ -83,3 +84,4 @@ func (r *repositoryImplMap) Update(upTask *RepTask) error {
 	}
 	return errNotFinedId
 }
+*/

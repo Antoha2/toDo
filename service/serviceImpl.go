@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -24,9 +23,9 @@ func New(rep repository.Repository) *serviceImpl {
 //Create
 func (s *serviceImpl) Create(task *SerTask) error {
 
-	if s.repository22.LenRep() >= 3 {
+	/* if s.repository22.LenRep() >= 3 {
 		return errors.New("нельзя хранить больше трех")
-	}
+	} */
 	newId := s.counter()
 	repTask := new(repository.RepTask)
 
@@ -78,7 +77,8 @@ func (s *serviceImpl) Read(task *SerFilter) []*SerTask {
 //Delete
 func (s *serviceImpl) Delete(task *SerTask) error {
 
-	delFilter := new(repository.RepFilter)
+	//delFilter := new(repository.RepFilter)
+	delFilter := new(repository.RepTask)
 	delFilter.Id = task.Id
 	err := s.repository22.Delete(delFilter)
 	if err != nil {
