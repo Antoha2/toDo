@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -91,7 +92,9 @@ func (r *repositoryImplDB) Create(task *RepTask) error {
 		fmt.Println("создана запись - ", task)
 		return nil
 	}
-	return errors.New("не больше трех записей")
+
+	errStr := fmt.Sprintf("не больше %d записей", countTask)
+	return errors.New(errStr)
 
 }
 
@@ -105,12 +108,32 @@ func (r *repositoryImplDB) Read(readFilter *RepFilter) []RepTask {
 		return sliceTask
 	}
 
-	for _, id := range readFilter.Ids {
-		strRead := fmt.Sprintf("select * from todolist where id=%v", id)
-		//	ids:="1,2,3"
-		//	strRead := fmt.Sprintf("select * from todolist where id in ($1)", ids)
-		sliceTask = r.queryRead(strRead, sliceTask)
+	ids := ""
+	for i, id := range readFilter.Ids {
 
+		if i == 0 {
+			ids = strconv.Itoa(id)
+		} else {
+			ids = ids + ", " + strconv.Itoa(id)
+		}
+	}
+
+	var task RepTask
+
+	//stmtGet, err := r.rep.DB.Query("select * from todolist where id in ($1)", ids)
+	strRead := fmt.Sprintf("select * from todolist where id in (%s)", ids)
+	stmtGet, err := r.rep.DB.Query(strRead)
+	if err != nil {
+		panic(err)
+	}
+	for stmtGet.Next() {
+
+		err := stmtGet.Scan(&task.Id, &task.Text, &task.IsDone)
+		if err != nil {
+			panic(err)
+		}
+		sliceTask = append(sliceTask, task)
+		fmt.Println("считана запись -", task)
 	}
 	return sliceTask
 }
