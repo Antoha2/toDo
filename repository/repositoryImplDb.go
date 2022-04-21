@@ -7,6 +7,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const countTask = 3 //максимальное кол-во записей в базе
+
 var errNotFinedIdDB = errors.New("id not fined")
 
 type repositoryImplDB struct {
@@ -68,37 +70,45 @@ func (r *repositoryImplDB) LenRep() int {
 //Create
 func (r *repositoryImplDB) Create(task *RepTask) error {
 
-	strCreate := fmt.Sprintf("INSERT INTO todolist (id, text, isDone) VALUES (%d, '%s', %v)", task.Id, task.Text, task.IsDone)
-	stmtIns, err := r.rep.DB.Query(strCreate)
+	count := 0
+	stmtCount, err := r.rep.DB.Query("select count(id) as count from todolist")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("создана запись - ", task)
-	defer stmtIns.Close()
-	return nil
+	for stmtCount.Next() {
+
+		err := stmtCount.Scan(&count)
+		if err != nil {
+			panic(err)
+		}
+	}
+	if count < countTask {
+
+		_, err := r.rep.DB.Exec("INSERT INTO todolist (id, text, isdone) VALUES ($1, $2, $3)", task.Id, task.Text, task.IsDone)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("создана запись - ", task)
+		return nil
+	}
+	return errors.New("не больше трех записей")
+
 }
 
-//подсчет кол-ва элементов
-/* func (r *repositoryImplDB) LenRep() int {
-
-	count := len(r.rep)
-	return count
-} */
-
 //Read
-
 func (r *repositoryImplDB) Read(readFilter *RepFilter) []RepTask {
 
 	sliceTask := make([]RepTask, 0)
 
 	if readFilter.Ids == nil || len(readFilter.Ids) == 0 {
-		strRead := fmt.Sprintf("select * from todolist")
-		sliceTask = r.queryRead(strRead, sliceTask)
+		sliceTask = r.queryRead("select * from todolist", sliceTask)
 		return sliceTask
 	}
 
 	for _, id := range readFilter.Ids {
-		strRead := fmt.Sprintf("select * from todolist where id=%d", id)
+		strRead := fmt.Sprintf("select * from todolist where id=%v", id)
+		//	ids:="1,2,3"
+		//	strRead := fmt.Sprintf("select * from todolist where id in ($1)", ids)
 		sliceTask = r.queryRead(strRead, sliceTask)
 
 	}
@@ -108,7 +118,7 @@ func (r *repositoryImplDB) Read(readFilter *RepFilter) []RepTask {
 //Delete
 func (r *repositoryImplDB) Delete(delTask *RepTask) error {
 
-	strDelete := fmt.Sprintf("delete from todolist where id=%d", delTask.Id)
+	strDelete := fmt.Sprintf("delete from todolist where id=%v", delTask.Id)
 	err := r.queryUpdate(strDelete, delTask)
 	if err != nil {
 		return err
@@ -119,7 +129,7 @@ func (r *repositoryImplDB) Delete(delTask *RepTask) error {
 //Update
 func (r *repositoryImplDB) Update(upTask *RepTask) error {
 
-	strUpdate := fmt.Sprintf("update todolist set text='%s' , isdone=%v where id=%d", upTask.Text, upTask.IsDone, upTask.Id)
+	strUpdate := fmt.Sprintf("update todolist set text='%v', isdone=%v where id=%v", upTask.Text, upTask.IsDone, upTask.Id)
 	err := r.queryUpdate(strUpdate, upTask)
 	if err != nil {
 		return err

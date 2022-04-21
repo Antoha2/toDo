@@ -1,12 +1,11 @@
 package repository
 
-/*
 import (
 	"errors"
 	"fmt"
 )
 
-var errNotFinedId = errors.New("id not fined")
+var errNotFinedIdMap = errors.New("id not fined")
 
 type repositoryImplMap struct {
 	rep map[int]RepTask
@@ -71,7 +70,7 @@ func (r *repositoryImplMap) Delete(delFilter *RepFilter) error {
 		fmt.Println(r)
 		return nil
 	}
-	return errNotFinedId
+	return errNotFinedIdMap
 }
 
 //Update
@@ -82,6 +81,5 @@ func (r *repositoryImplMap) Update(upTask *RepTask) error {
 		fmt.Println(r)
 		return nil
 	}
-	return errNotFinedId
+	return errNotFinedIdMap
 }
-*/
