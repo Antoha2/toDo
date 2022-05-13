@@ -1,15 +1,6 @@
-/* version: "3.9"
-services:
-  postgres:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: "tododb"
-      POSTGRES_USER: "todoadmin"
-      POSTGRES_PASSWORD: "tododo"
-       PGDATA: "/var/lib/postgresql/data/pgdata"
-    volumes:
-      - ../db:/docker-entrypoint-initdb.d
-      - .:/var/lib/postgresql/data
-    
-    ports:
-      - "5432:5432" */
+DROP TABLE IF EXISTS todolist;
+create table todolist (
+	Id INT not null,
+	Text varchar(255) not null,
+	IsDone bool not null default false	
+)
