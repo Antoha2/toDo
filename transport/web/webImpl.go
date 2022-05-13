@@ -8,27 +8,24 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/antoha2/todo/service"
+	taskService "github.com/antoha2/todo/service"
+	authService "github.com/antoha2/todo/service/authService"
 )
 
-type Task struct {
-	Id     int    `json:"id"`
-	Text   string `json:"text"`
-	IsDone bool   `json:"isDone"`
-}
-
-type webImpl struct {
-	service service.Service
-	server  *http.Server
-}
-
-func New(service service.Service) *webImpl {
+func NewTaskWeb(service taskService.TodolistServ) *webImpl {
 	return &webImpl{
-		service: service, //??????
+		taskService: service, //??????
+		//authService: authService,
 	}
 }
 
-func (wImpl *webImpl) Start() error {
+func NewAuthWeb(authService authService.Authorization) *authWebImpl {
+	return &authWebImpl{
+		authService: authService,
+	}
+}
+
+func (wImpl *webImpl) StartTask() error {
 
 	wImpl.server = &http.Server{Addr: ":8181"}
 
@@ -51,13 +48,44 @@ func (wImpl *webImpl) Stop() {
 	}
 }
 
+//декодеры JSON
+func (wImpl *webImpl) Decoder(r *http.Request, task *taskService.SerTask) error {
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, task)
+	if err != nil {
+		fmt.Println("can't unmarshal !!!!!: ", err.Error())
+		return err
+	}
+	return nil
+}
+
+func (wImpl *webImpl) DecoderFilter(r *http.Request, task *taskService.SerFilter) error {
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, task)
+	if err != nil {
+		fmt.Println("can't unmarshal: ", err.Error())
+		return err
+	}
+	return nil
+}
+
 //обработчик Сreate
 func (wImpl *webImpl) handlerCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
 	}
 
-	task := new(service.SerTask)
+	task := new(taskService.SerTask)
 
 	err := wImpl.Decoder(r, task)
 	if err != nil {
@@ -66,7 +94,7 @@ func (wImpl *webImpl) handlerCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = wImpl.service.Create(task)
+	err = wImpl.taskService.Create(task)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
@@ -85,43 +113,13 @@ func (wImpl *webImpl) handlerCreate(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (wImpl *webImpl) Decoder(r *http.Request, task *service.SerTask) error {
-
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(body, task)
-	if err != nil {
-		fmt.Println("can't unmarshal: ", err.Error())
-		return err
-	}
-	return nil
-}
-
-func (wImpl *webImpl) DecoderFilter(r *http.Request, task *service.SerFilter) error {
-
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(body, task)
-	if err != nil {
-		fmt.Println("can't unmarshal: ", err.Error())
-		return err
-	}
-	return nil
-}
-
 //обработчик Read
 func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		return
 	}
 
-	readIds := new(service.SerFilter)
+	readIds := new(taskService.SerFilter)
 
 	err := wImpl.DecoderFilter(r, readIds)
 	if err != nil {
@@ -129,7 +127,7 @@ func (wImpl *webImpl) handlerRead(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	task := wImpl.service.Read(readIds)
+	task := wImpl.taskService.Read(readIds)
 	json, err := json.Marshal(task)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -146,7 +144,7 @@ func (wImpl *webImpl) handlerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	delId := new(service.SerTask)
+	delId := new(taskService.SerTask)
 
 	err := wImpl.Decoder(r, delId)
 	if err != nil {
@@ -155,7 +153,7 @@ func (wImpl *webImpl) handlerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = wImpl.service.Delete(delId)
+	err = wImpl.taskService.Delete(delId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -169,7 +167,7 @@ func (wImpl *webImpl) handlerUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task := new(service.SerTask)
+	task := new(taskService.SerTask)
 
 	err := wImpl.Decoder(r, task)
 	if err != nil {
@@ -178,7 +176,7 @@ func (wImpl *webImpl) handlerUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = wImpl.service.Update(task)
+	err = wImpl.taskService.Update(task)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))

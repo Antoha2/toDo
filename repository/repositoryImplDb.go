@@ -4,23 +4,26 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-
-	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 const countTask = 3 //максимальное кол-во записей в базе
 
 var errNotFinedIdDB = errors.New("id not fined")
 
-type repositoryImplDB struct {
-	rep *sqlx.DB
+type RepTask struct {
+	Id       int
+	Text     string
+	IsDone   bool
+	CreateAt time.Time
 }
 
-func NewDB(dbx *sqlx.DB) *repositoryImplDB {
-
-	return &repositoryImplDB{
-		rep: dbx,
-	}
+type RepFilter struct {
+	Id     int
+	Ids    []int
+	Text   string
+	IsDone bool
+	//Tasks  []RepTask
 }
 
 //запрос на считку записей из DB
@@ -61,17 +64,10 @@ func (r *repositoryImplDB) queryUpdate(sqlQuery string, upTask *RepTask) error {
 	return nil
 }
 
-//подсчет кол-ва элементов
-func (r *repositoryImplDB) LenRep() int {
-
-	//count := len(r.rep)
-	return 0
-}
-
 //Create
 func (r *repositoryImplDB) Create(task *RepTask) error {
 
-	count := 0
+	var count int
 	stmtCount, err := r.rep.DB.Query("select count(id) as count from todolist")
 	if err != nil {
 		panic(err)
@@ -85,10 +81,14 @@ func (r *repositoryImplDB) Create(task *RepTask) error {
 	}
 	if count < countTask {
 
-		_, err := r.rep.DB.Exec("INSERT INTO todolist (id, text, isdone) VALUES ($1, $2, $3)", task.Id, task.Text, task.IsDone)
-		if err != nil {
+		var id int
+		//query := fmt.Sprintf("INSERT INTO todolist (text, isdone) values ($1, $2) RETURNING id")
+		query := "INSERT INTO todolist (text, isdone) values ($1, $2) RETURNING id"
+		row := r.rep.DB.QueryRow(query, task.Text, task.IsDone)
+		if err := row.Scan(&id); err != nil {
 			panic(err)
 		}
+		task.Id = id
 		fmt.Println("создана запись - ", task)
 		return nil
 	}
@@ -108,7 +108,7 @@ func (r *repositoryImplDB) Read(readFilter *RepFilter) []RepTask {
 		return sliceTask
 	}
 
-	ids := ""
+	var ids string
 	for i, id := range readFilter.Ids {
 
 		if i == 0 {

@@ -11,8 +11,9 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/antoha2/todo/config"
-	"github.com/antoha2/todo/repository"
-	"github.com/antoha2/todo/service"
+	taskRepository "github.com/antoha2/todo/repository"
+	taskService "github.com/antoha2/todo/service"
+	authService "github.com/antoha2/todo/service/authService"
 	"github.com/antoha2/todo/transport/web"
 )
 
@@ -49,7 +50,7 @@ func initDb(cfg *config.Config) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf(" error to ping connection pool: %v", err)
 	}
-	fmt.Printf("Запуск базы данных  на http://127.0.0.1:%d\n", cfg.DB.Port)
+	fmt.Printf("Запуск базы данных на http://127.0.0.1:%d\n", cfg.DB.Port)
 	return dbx, nil
 }
 
@@ -62,11 +63,18 @@ func Run() {
 		os.Exit(1)
 	}
 
-	rep := repository.NewDB(dbx)
-	ser := service.New(rep)
-	tran := web.New(ser)
+	//rep := taskRepository.NewDB(dbx)
+	rep := taskRepository.NewRepository(dbx)
+	authRep := taskRepository.NewAuthPostgres(dbx)
 
-	go tran.Start()
+	ser := taskService.NewTaskService(rep)
+	authSer := authService.NewAuthService(authRep)
+
+	tran := web.NewTaskWeb(ser)
+	authTran := web.NewAuthWeb(authSer)
+
+	go tran.StartTask()
+	go authTran.StartAuth()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

@@ -1,13 +1,33 @@
 package service
 
-import _ "github.com/antoha2/todo/repository"
+import (
+	//etodo "github.com/antoha2/todo"
 
-type Service interface {
+	taskRepository "github.com/antoha2/todo/repository"
+	authservice "github.com/antoha2/todo/service/authService"
+	// "github.com/antoha2/todo/service/authservice"
+)
+
+type Service struct {
+	authservice.Authorization
+	TodolistServ
+}
+
+type TodolistServ interface {
 	Create(task *SerTask) error
 	Read(task *SerFilter) []*SerTask
 	Delete(task *SerTask) error
 	Update(task *SerTask) error
-	//LenRep() int
+}
+
+type serviceImpl struct {
+	repository22 taskRepository.TodolistRep
+}
+
+func NewTaskService(rep taskRepository.TodolistRep) *serviceImpl {
+	return &serviceImpl{
+		repository22: rep,
+	}
 }
 
 type SerTask struct {
