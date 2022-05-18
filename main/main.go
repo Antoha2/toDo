@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,10 +12,12 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/antoha2/todo/config"
-	taskRepository "github.com/antoha2/todo/repository"
-	taskService "github.com/antoha2/todo/service"
 	authService "github.com/antoha2/todo/service/authService"
-	"github.com/antoha2/todo/transport/web"
+	authRepository "github.com/antoha2/todo/service/authService/authRepository"
+	taskService "github.com/antoha2/todo/service/taskService"
+	taskRepository "github.com/antoha2/todo/service/taskService/taskRepository"
+	web "github.com/antoha2/todo/transport/web"
+	//authWeb "github.com/antoha2/todo/transport/web/authWeb"
 )
 
 func main() {
@@ -50,7 +53,7 @@ func initDb(cfg *config.Config) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf(" error to ping connection pool: %v", err)
 	}
-	fmt.Printf("Запуск базы данных на http://127.0.0.1:%d\n", cfg.DB.Port)
+	log.Printf("Запуск базы данных на http://127.0.0.1:%d\n", cfg.DB.Port)
 	return dbx, nil
 }
 
@@ -63,23 +66,20 @@ func Run() {
 		os.Exit(1)
 	}
 
-	//rep := taskRepository.NewDB(dbx)
-	rep := taskRepository.NewRepository(dbx)
-	authRep := taskRepository.NewAuthPostgres(dbx)
+	taskRep := taskRepository.NewTaskRepository(dbx)
+	authRep := authRepository.NewAuthPostgres(dbx)
 
-	ser := taskService.NewTaskService(rep)
+	taskSer := taskService.NewTaskService(taskRep)
 	authSer := authService.NewAuthService(authRep)
 
-	tran := web.NewTaskWeb(ser)
-	authTran := web.NewAuthWeb(authSer)
+	Tran := web.NewWeb(taskSer, *authSer)
 
-	go tran.StartTask()
-	go authTran.StartAuth()
+	go Tran.Start()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 
 	<-quit
-	tran.Stop()
+	Tran.Stop()
 
 }
