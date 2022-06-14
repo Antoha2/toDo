@@ -1,0 +1,12 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13.6
+    environment:
+      POSTGRES_DB: tododb
+      POSTGRES_USER: todoadmin
+      POSTGRES_PASSWORD: tododo
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./../db:/var/lib/postgresql
