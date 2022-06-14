@@ -15,11 +15,12 @@ const (
 )
 
 type Authorization interface {
-	CreateUser(user *etodo.User) error
+	CreateUser(user *etodo.User, userRoles *etodo.UsersRoles) error
 	UpdateUser(user *etodo.User) error
-	DeleteUser(user *etodo.User) error
+	DeleteUser(userId int) error
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
+	GetRoles(id int) []string
 }
 
 type AuthService struct {
